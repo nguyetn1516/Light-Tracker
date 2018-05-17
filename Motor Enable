@@ -21,3 +21,20 @@ void ErrorHandler (LJ_ERROR ljError, long lngLineNumber)
     }
   }
 }
+
+LJ_ERROR ljError;         // LabJack error code
+LJ_HANDLE ljHandle = 0;   // ID# assigned to the opened LabJack
+
+int ReadSensorVal;
+
+LoadLabJackUD(); // Load the LabJack DLL
+
+// Open the first found LabJack U3
+ljError = OpenLabJack (LJ_dtU3, LJ_ctUSB, "1", 1, &ljHandle);
+ErrorHandler(ljError, __LINE__); 
+
+ljError = ePut(ljHandle, LJ_ioPIN_CONFIGURATION_RESET, 0, 0, 0);
+ErrorHandler(ljError, __LINE__); 
+
+// Read an output from the photocell
+ljError = eGet (ljHandle, LJ_ioGET_DIGITAL_BIT, Bit2, &ReadSensorVal, 0);
