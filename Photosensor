@@ -37,6 +37,13 @@ ljError = eGet (ljHandle, LJ_ioGET_AIN, 2, &ReadSensorVal, 0); //Look at changin
 
 ErrorHandler(ljError, __LINE__);
 
+printf ("%f\n", ReadSensorVal);
+
+
+
+
+ Sleep(1000);
+
 }
 return 0;
 }
