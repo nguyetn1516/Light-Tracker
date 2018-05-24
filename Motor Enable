@@ -38,15 +38,38 @@ ErrorHandler(ljError, __LINE__);
 ljError = eGet (ljHandle, LJ_ioGET_AIN, 2, &ReadSensorVal, 0);
 ErrorHandler(ljError, __LINE__); 
 
-// Pseudocode
-if (it's dark)
-{
-ljError = ePut (ljHandle, LJ_ioPUT_ANALOG_ENABLE_BIT, 3, 0, 0);   // disable the pin 1,2EN
+int main (void){
+int ReadSensorVal;
+
+
+ReadSensorVal = 0;
+while (ReadSensorVal != 20000){
+ljError = eGet (ljHandle, LJ_ioGET_AIN, 2, &ReadSensorVal, 0); //Look at changing to digital 
+
 ErrorHandler(ljError, __LINE__);
+
+MotorSpeed(ReadSensorVal);
+
+}
+return 0;
 }
 
-else if (there's light)
+void MotorSpeed (float SensorVal )
 {
-ljError = ePut (ljHandle, LJ_ioPUT_DIGITAL_BIT, 3, 1, 0);         // enable the pin 1,2EN
-ErrorHandler(ljError, __LINE__);
-}
+  if ( >= 0 && light < 0.2)
+  {
+    ljError = ePut (ljHandle, LJ_ioPUT_ANALOG_ENABLE_BIT, 3, 0, 0);   // disable the pin 1,2EN
+    ErrorHandler(ljError, __LINE__);
+  }
+
+  else if (light >= 0.2 && light < 0.4)
+  {
+    ljError = ePut (ljHandle, LJ_ioPUT_DIGITAL_BIT, 3, 1, 0);         // enable the pin 1,2EN
+  ErrorHandler(ljError, __LINE__);
+  
+   // Set Timer0 to a 20% duty cycle (is low 49152 out of 65536 
+   ljError = ePut(ljHandle, LJ_ioPUT_TIMER_VALUE, 0, 52428 ,0); 
+   ErrorHandler(ljError, __LINE__); 
+  }
+  
+  else 
