@@ -88,6 +88,76 @@ void MotorSpeed (float SensorVal )
     ErrorHandler(ljError, __LINE__);
   
    // Set Timer0 to a 30% duty cycle (out of 65536)
-   ljError = ePut(ljHandle, LJ_ioPUT_TIMER_VALUE, 0, 45875 ,0); 
+   ljError = ePut(ljHandle, LJ_ioPUT_TIMER_VALUE, 0, 45875.2 ,0); 
+   ErrorHandler(ljError, __LINE__);
+  }
+  
+  else if (SensorVal >= 0.872 && SensorVal < 1.096)
+  {
+    ljError = ePut (ljHandle, LJ_ioPUT_DIGITAL_BIT, 3, 1, 0);         // enable the pin 1,2EN
+    ErrorHandler(ljError, __LINE__);
+  
+   // Set Timer0 to a 40% duty cycle (out of 65536)
+   ljError = ePut(ljHandle, LJ_ioPUT_TIMER_VALUE, 0, 39321.6 ,0); 
+   ErrorHandler(ljError, __LINE__);
+  }
+  
+  else if (SensorVal >= 1.096 && SensorVal < 1.32)
+  {
+    ljError = ePut (ljHandle, LJ_ioPUT_DIGITAL_BIT, 3, 1, 0);         // enable the pin 1,2EN
+    ErrorHandler(ljError, __LINE__);
+  
+   // Set Timer0 to a 50% duty cycle (out of 65536)
+   ljError = ePut(ljHandle, LJ_ioPUT_TIMER_VALUE, 0, 32768 ,0); 
+   ErrorHandler(ljError, __LINE__);
+  }
+  
+  else if (SensorVal >= 1.32 && SensorVal < 1.544)
+  {
+    ljError = ePut (ljHandle, LJ_ioPUT_DIGITAL_BIT, 3, 1, 0);         // enable the pin 1,2EN
+    ErrorHandler(ljError, __LINE__);
+  
+   // Set Timer0 to a 60% duty cycle (out of 65536)
+   ljError = ePut(ljHandle, LJ_ioPUT_TIMER_VALUE, 0, 26214.4 ,0); 
+   ErrorHandler(ljError, __LINE__);
+  }
+  
+  else if (SensorVal >= 1.544 && SensorVal < 1.768)
+  {
+    ljError = ePut (ljHandle, LJ_ioPUT_DIGITAL_BIT, 3, 1, 0);         // enable the pin 1,2EN
+    ErrorHandler(ljError, __LINE__);
+  
+   // Set Timer0 to a 70% duty cycle (out of 65536)
+   ljError = ePut(ljHandle, LJ_ioPUT_TIMER_VALUE, 0, 19660.8 ,0); 
+   ErrorHandler(ljError, __LINE__);
+  }
+  
+  else if (SensorVal >= 1.768 && SensorVal < 1.992)
+  {
+    ljError = ePut (ljHandle, LJ_ioPUT_DIGITAL_BIT, 3, 1, 0);         // enable the pin 1,2EN
+    ErrorHandler(ljError, __LINE__);
+  
+   // Set Timer0 to a 80% duty cycle (out of 65536)
+   ljError = ePut(ljHandle, LJ_ioPUT_TIMER_VALUE, 0, 13107.2 ,0); 
+   ErrorHandler(ljError, __LINE__);
+  }
+  
+  else if (SensorVal >= 1.992 && SensorVal < 2.216)
+  {
+    ljError = ePut (ljHandle, LJ_ioPUT_DIGITAL_BIT, 3, 1, 0);         // enable the pin 1,2EN
+    ErrorHandler(ljError, __LINE__);
+  
+   // Set Timer0 to a 90% duty cycle (out of 65536)
+   ljError = ePut(ljHandle, LJ_ioPUT_TIMER_VALUE, 0, 6553.6 ,0); 
+   ErrorHandler(ljError, __LINE__);
+  }
+  
+  else if (SensorVal >= 2.216 && SensorVal < 2.6)
+  {
+    ljError = ePut (ljHandle, LJ_ioPUT_DIGITAL_BIT, 3, 1, 0);         // enable the pin 1,2EN
+    ErrorHandler(ljError, __LINE__);
+  
+   // Set Timer0 to a 100% duty cycle (out of 65536)
+   ljError = ePut(ljHandle, LJ_ioPUT_TIMER_VALUE, 0, 65536 ,0); 
    ErrorHandler(ljError, __LINE__);
   }
