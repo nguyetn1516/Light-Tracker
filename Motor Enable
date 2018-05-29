@@ -60,11 +60,17 @@ return 0;
 void MotorSpeed (float SensorVal )
 {
   // Set the timer/counter pin offset to 4. This puts Timer0 on FIO4. 
-  ljError = ePut(ljHandle,LJ_ioPUT_CON
+  ljError = ePut(ljHandle,LJ_ioPUT_CONFIG, LJ_chTIMER_COUNTER_PIN_OFFSET, FIO pin, 0);
+  ErrorHandler(ljError, __LINE__);
   
-	// set Timer0 to 8-bit pulse width modulation mode, but not sure if we need it
-	ljError = ePut(ljHandle, LJ_ioPUT_TIMER_MODE, 0, LJ_tmPWM8, 0);
-
+  // set Timer0 to 8-bit pulse width modulation mode, but not sure if we need it
+  ljError = ePut(ljHandle, LJ_ioPUT_TIMER_MODE, 0, LJ_tmPWM8, 0);
+  ErrorHandler(ljError, __LINE__);
+  
+  // Use the 48 MHz timer clock base with divisor 
+  ljError =  ePut(ljHandle, LJ_ioPUT_CONFIG, LJ_chTIMER_CLOCK_BASE, LJ_tc48MHZ_DIV, 0); 
+  ErrorHandler(ljError, __LINE__);
+  
   if (SensorVal >= 0 && SensorVal < 0.2)
   {
     ljError = ePut (ljHandle, LJ_ioPUT_DIGITAL_BIT, 3, 0, 0);   // disable the pin 1,2EN
