@@ -21,11 +21,22 @@ void ErrorHandler (LJ_ERROR ljError, long lngLineNumber)
     }
   }
 }
+ 
 
+int main (void){
+int ReadSensorVal;
 LJ_ERROR ljError;         // LabJack error code
 LJ_HANDLE ljHandle = 0;   // ID# assigned to the opened LabJack
 int ReadSensorVal;
+
 LoadLabJackUD(); // Load the LabJack DLL
+
+ljError=ePut(ljHandle, LJ_ioPUT_ANALOG_ENABLE_BIT,2,1,0);
+ErrorHandler(ljError,__LINE__);
+
+// Read an output from the photocell
+ljError = eGet (ljHandle, LJ_ioGET_AIN, 2, &ReadSensorVal, 0);
+ErrorHandler(ljError, __LINE__);
 
 // Open the first found LabJack U3
 ljError = OpenLabJack (LJ_dtU3, LJ_ctUSB, "1", 1, &ljHandle);
@@ -33,17 +44,6 @@ ErrorHandler(ljError, __LINE__);
 
 ljError = ePut(ljHandle, LJ_ioPIN_CONFIGURATION_RESET, 0, 0, 0);
 ErrorHandler(ljError, __LINE__); 
-
-ljError=ePut(ljHandle, LJ_ioPUT_ANALOG_ENABLE_BIT,2,1,0);
-ErrorHandler(ljError,__LINE__);
-
-// Read an output from the photocell
-ljError = eGet (ljHandle, LJ_ioGET_AIN, 2, &ReadSensorVal, 0);
-ErrorHandler(ljError, __LINE__); 
-
-int main (void){
-int ReadSensorVal;
-
 
 ReadSensorVal = 0;
 while (ReadSensorVal != 20000){
@@ -59,6 +59,12 @@ return 0;
 
 void MotorSpeed (float SensorVal )
 {
+  // Set the timer/counter pin offset to 4. This puts Timer0 on FIO4. 
+  ljError = ePut(ljHandle,LJ_ioPUT_CON
+  
+	// set Timer0 to 8-bit pulse width modulation mode, but not sure if we need it
+	ljError = ePut(ljHandle, LJ_ioPUT_TIMER_MODE, 0, LJ_tmPWM8, 0);
+
   if (SensorVal >= 0 && SensorVal < 0.2)
   {
     ljError = ePut (ljHandle, LJ_ioPUT_DIGITAL_BIT, 3, 0, 0);   // disable the pin 1,2EN
