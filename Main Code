@@ -21,8 +21,9 @@ void ErrorHandler (LJ_ERROR ljError, long lngLineNumber)
     }
   }
 }
- 
-void MotorRotation(double LeftVal, double RightVal)
+
+
+void MotorRotation(double LeftVal, double RightVal)   // passing output data from photosensors
 {
   if (LeftVal > RightVal) //counter clockwise
   { 
@@ -52,6 +53,7 @@ void Photosensor ()
 {
   double ReadLeftSensorVal;
   double DifferenceVal;
+  double tempVal; //scratch variable
   
   ljError=ePut(ljHandle, LJ_ioPUT_ANALOG_ENABLE_BIT,2,1,0);   //FIO2
   ErrorHandler(ljError, __LINE__);
@@ -61,21 +63,20 @@ void Photosensor ()
   while (ReadSensorVal > 0){
     ljError = eGet (ljHandle, LJ_ioGET_AIN, 2, &ReadLeftSensorVal, 0); //Look at changing to digital
     ErrorHandler(ljError, __LINE__);
-  
+    //Need to add code for the 2nd photosensor
     printf ("Left = %f\tRight = %f\n", ReadLeftSensorVal, ReadRightSensorVal);
     
-    DifferenceVal = abs(ReadLeftSensorVal - ReadRightSensorVal);
+    DifferenceVal = abs(ReadLeftSensorVal - ReadRightSensorVal);    //The diferrence value betwenn photosensor output data
   
-  
-    Sleep(200);
+    Sleep(200); //not sure what this is - Nguyet
   }
    
-  MotorRotation(ReadLeftSensorVal, ReadRightSensorVal);
+  MotorRotation(ReadLeftSensorVal, ReadRightSensorVal);     //Calling MotorRotation function
   
   if (DifferenceVal >= 0.3 && DifferenceVal < 1)
   {
     ljError = ePut (ljHandle, LJ_ioPUT_DIGITAL_BIT, 3, 1, 0);         // enable the pin 1,2EN
-    ErrorHandler(ljError, __LINE__);
+    ErrorHandler(ljError, __LINE__);                                  // FIO3
   
    // Set Timer0 to a 30% duty cycle (out of 65536)
    ljError = ePut(ljHandle, LJ_ioPUT_TIMER_VALUE, 0, 45875 ,0); 
@@ -84,7 +85,7 @@ void Photosensor ()
   else if (DifferenceVal >= 1 && DifferenceVal < 1.7)
   {
     ljError = ePut (ljHandle, LJ_ioPUT_DIGITAL_BIT, 3, 1, 0);         // enable the pin 1,2EN
-    ErrorHandler(ljError, __LINE__);
+    ErrorHandler(ljError, __LINE__);                                  // FIO3
   
    // Set Timer0 to a 45% duty cycle (out of 65536)
    ljError = ePut(ljHandle, LJ_ioPUT_TIMER_VALUE, 0, 36045 ,0); 
@@ -93,7 +94,7 @@ void Photosensor ()
   else if (DifferenceVal >= 1.7 && DifferenceVal < 3)
   {
     ljError = ePut (ljHandle, LJ_ioPUT_DIGITAL_BIT, 3, 1, 0);         // enable the pin 1,2EN
-    ErrorHandler(ljError, __LINE__);
+    ErrorHandler(ljError, __LINE__);                                  // FIO3
     
   // Set Timer0 to a 60% duty cycle (out of 65536)
    ljError = ePut(ljHandle, LJ_ioPUT_TIMER_VALUE, 0, 26214 ,0); 
@@ -109,14 +110,14 @@ void Photosensor ()
    ljError = ePut(ljHandle, LJ_ioPIN_CONFIGURATION_RESET, 0, 0, 0); 
    ErrorHandler(ljError, __LINE__); 
    // PWM output sets FIO4 to output, so do a read to set it to input 
-   ljError = eGet(ljHandle, LJ_ioGET_DIGITAL_BIT, 4, &Value, 0); 
+   ljError = eGet(ljHandle, LJ_ioGET_DIGITAL_BIT, 4, &tempVal, 0);                // FIO4
    ErrorHandler(ljError, __LINE__);
 }
 
 int MotorEnable(void)
 {
   // Set the timer/counter pin offset to 4. This puts Timer0 on FIO4. 
-  ljError = ePut(ljHandle,LJ_ioPUT_CONFIG, LJ_chTIMER_COUNTER_PIN_OFFSET, 4, 0);
+  ljError = ePut(ljHandle,LJ_ioPUT_CONFIG, LJ_chTIMER_COUNTER_PIN_OFFSET, 4, 0);    //FIO4
   ErrorHandler(ljError, __LINE__);
   
   // Use the 48 MHz timer clock base with divisor 
@@ -135,7 +136,7 @@ int MotorEnable(void)
    ljError = ePut(ljHandle, LJ_ioPUT_TIMER_MODE, 0, LJ_tmPWM16, 0); 
    ErrorHandler(ljError, __LINE__);
    
-   Photosensor();
+   Photosensor();     //Calling Photosensor function
 }
 
 
@@ -155,9 +156,7 @@ ErrorHandler(ljError, __LINE__);
 ljError = ePut(ljHandle, LJ_ioPIN_CONFIGURATION_RESET, 0, 0, 0);
 ErrorHandler(ljError, __LINE__); 
 
-
-
-MotorEnable();
+MotorEnable();    //Calling MotorEnable function
 
 return 0;
 }
