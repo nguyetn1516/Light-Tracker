@@ -1,0 +1,148 @@
+#include <stdio.h>
+#include <Windows.h>
+#include <conio.h>
+#include <stdlib.h>
+#include "LabJackUD.h"
+#include "LJUD_DynamicLinking.h"
+
+//defines background and foreground colors
+#define BLUE FOREGROUND_BLUE
+#define LIGHTBLUE    FOREGROUND_INTENSITY | FOREGROUND_BLUE
+#define bgLIGHTBLUE    BACKGROUND_INTENSITY | BACKGROUND_BLUE
+#define BLACK 0
+#define bgBLACK 0
+#define bgWHITE        BACKGROUND_RED | BACKGROUND_GREEN | BACKGROUND_BLUE
+#define WHITE        FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE
+
+//Sets the color of the text that is displayed by console output functions
+void textcolor (int color)
+{
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
+}
+
+// Clears the entire console screen
+void clrscr (int color)
+{
+    DWORD n; // Number of characters written
+    DWORD size; // number of visible characters
+    COORD coord = {0, 0}; // Coordinates of top-left screen position
+    HANDLE hStdOut; // Handle for console standard output
+    CONSOLE_SCREEN_BUFFER_INFO csbi;
+    // Get a handle to the console screen buffer
+    if ((hStdOut = GetStdHandle(STD_OUTPUT_HANDLE)) == INVALID_HANDLE_VALUE)
+        return;
+    // If non-negative arg then use specified color. Otherwise, use current color.
+    if (color >= 0)
+        SetConsoleTextAttribute(hStdOut, color);
+    // Determine the current buffer size and color
+    if (!GetConsoleScreenBufferInfo(hStdOut, &csbi))
+        return;
+    size = csbi.dwSize.X * csbi.dwSize.Y;
+    // Overwrite the screen buffer with space characters
+    if (!FillConsoleOutputCharacter(hStdOut, TEXT(' '), size, coord, &n))
+        return;
+    // Fill the screen buffer with color and attributes
+    if (!FillConsoleOutputAttribute(hStdOut, csbi.wAttributes, size, coord, &n))
+        return;
+    // Move the cursor to the home position
+    SetConsoleCursorPosition(hStdOut, coord);
+}
+
+//moves cursor to (x,y)
+void gotoxy (int x, int y)
+{
+    COORD coord; // Cursor coordinates
+    HANDLE hStdOut; // Handle for console standard output
+    CONSOLE_SCREEN_BUFFER_INFO csbi;
+    // Get a handle to the console screen buffer
+    if ((hStdOut = GetStdHandle(STD_OUTPUT_HANDLE)) == INVALID_HANDLE_VALUE)
+        return;
+    // Get buffer size information
+    if (!GetConsoleScreenBufferInfo(hStdOut, &csbi))
+        return;
+    // If needed, clip specified coordinates to actual buffer boundaries
+    if (x < 0) x = 0;
+    if (x >= csbi.dwSize.X) x = csbi.dwSize.X - 1;
+    if (y < 0) y = 0;
+    if (y >= csbi.dwSize.Y) y = csbi.dwSize.Y - 1;
+    // Move cursor to specified coordinates
+    coord.X = x;
+    coord.Y = y;
+    SetConsoleCursorPosition(hStdOut, coord);
+}
+
+//move cursor and print text
+int mvputs (int row, int col, const char *str)
+{
+    gotoxy(row, col);
+    return _cputs(str);
+}
+//function prototypes
+{
+void ErrorHandler (LJ_ERROR ljError, long lngLineNumber);
+void MOTOR_TEST();
+void PHOTO_TEST();
+void MOTOR_SPEED_TEST();
+
+LJ_ERROR ljError;         // LabJack error code
+LJ_HANDLE ljHandle = 0;   // ID# assigned to the opened LabJack
+}
+
+int main(void){
+    {//setup
+    gotoxy(30, 8);
+    _cprintf("Select the diagnostics mode (press 1, 2, or 3):");
+    mvputs(40, 9, "or press escape to exit");
+    textcolor(LIGHTBLUE | bgWHITE);
+    mvputs(45, 15, "1) Test Motor On/Off");
+    mvputs(45, 17, "2) Test Photosensor");
+    mvputs(45, 19, "3) Test Motor Speed");
+    }
+
+    while(1)
+    {
+        int userINP = _getch();
+        if (userINP == 49)
+        {
+            textcolor(bgLIGHTBLUE | WHITE);
+            mvputs(45, 15, "1) Test Motor On/Off");
+            textcolor(LIGHTBLUE | bgWHITE);
+            mvputs(45, 17, "2) Test Photosensor");
+            mvputs(45, 19, "3) Test Motor Rotation");
+
+            MOTOR_TEST();
+        }
+
+        if (userINP == 50)
+        {
+            textcolor(LIGHTBLUE | bgWHITE);
+            mvputs(45, 15, "1) Test Motor On/Off");
+            textcolor(bgLIGHTBLUE | WHITE);
+            mvputs(45, 17, "2) Test Photosensor");
+            textcolor(LIGHTBLUE | bgWHITE);
+            mvputs(45, 19, "3) Test Motor Rotation");
+
+            PHOTO_TEST();
+        }
+
+        if (userINP == 51)
+        {
+            textcolor(LIGHTBLUE | bgWHITE);
+            mvputs(45, 15, "1) Test Motor On/Off");
+            mvputs(45, 17, "2) Test Photosensor");
+            textcolor(bgLIGHTBLUE | WHITE);
+            mvputs(45, 19, "3) Test Motor Rotation");
+
+            //MOTOR_SPEED_TEST();
+        }
+
+        else if (userINP == 27)
+        {
+            return 0;
+        }
+    }
+    gotoxy(45, 25);
+    textcolor(BLACK | bgBLACK);
+    _cprintf("");
+
+}
