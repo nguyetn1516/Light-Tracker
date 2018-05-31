@@ -13,6 +13,7 @@ void ErrorHandler (LJ_ERROR ljError, long lngLineNumber)
   char err[255];
   if (ljError != LJE_NOERROR)
   {
+
     ErrorToString(ljError, err);
     printf("Error # %ld: %s\n", ljError, err);
     printf("Source line number = %ld\n", lngLineNumber);
@@ -28,22 +29,27 @@ LJ_ERROR ljError;         // LabJack error code
 LJ_HANDLE ljHandle = 0;   // ID# assigned to the opened LabJack
 
 int main (void){
-int ReadSensorVal;
+double ReadSensorVal;
+
+LoadLabJackUD();
+
+ljError = OpenLabJack (LJ_dtU3, LJ_ctUSB, "1", 1, &ljHandle);
+ErrorHandler(ljError, __LINE__);
+
+ljError=ePut(ljHandle, LJ_ioPIN_CONFIGURATION_RESET,0,0,0);
+ErrorHandler(ljError, __LINE__);
+ljError=ePut(ljHandle, LJ_ioPUT_ANALOG_ENABLE_BIT,2,1,0);
+ErrorHandler(ljError, __LINE__);
 
 
-ReadSensorVal = 0;
-while (ReadSensorVal != 20000){
-ljError = eGet (ljHandle, LJ_ioGET_AIN, 2, &ReadSensorVal, 0); //Look at changing to digital 
+while (ReadSensorVal > 0){
 
+ljError = eGet (ljHandle, LJ_ioGET_AIN, 2, &ReadSensorVal, 0); //Look at changing to digital
 ErrorHandler(ljError, __LINE__);
 
 printf ("%f\n", ReadSensorVal);
 
-
-
-
- Sleep(1000);
-
-}
-return 0;
-}
+ Sleep(200);
+ }
+ return 0;
+ }
