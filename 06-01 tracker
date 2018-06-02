@@ -9,15 +9,11 @@
 void ErrorHandler (LJ_ERROR ljError, long lngLineNumber)
 {
   char err[255];
-
   if (ljError != LJE_NOERROR)
   {
     ErrorToString(ljError, err);
-
     printf("Error # %ld: %s\n", ljError, err);
-
     printf("Source line number = %ld\n", lngLineNumber);
-
     if(ljError > LJE_MIN_GROUP_ERROR)
     {
       getchar();
@@ -146,12 +142,12 @@ int MotorEnable(LJ_HANDLE ljHandle)
   ljError = ePut(ljHandle,LJ_ioPUT_CONFIG, LJ_chTIMER_COUNTER_PIN_OFFSET, 4, 0);    //FIO4
   ErrorHandler(ljError, __LINE__);
 
-  // Use the 48 MHz timer clock base with divisor
+  // Use the 1 MHz timer clock base with divisor
   ljError =  ePut(ljHandle, LJ_ioPUT_CONFIG, LJ_chTIMER_CLOCK_BASE, LJ_tc1MHZ_DIV, 0);
   ErrorHandler(ljError, __LINE__);
 
-  // Set divisor to 0 (=256) so the actual timer clock is 187.5 kHz MHz????
-  ljError = ePut(ljHandle, LJ_ioPUT_CONFIG, LJ_chTIMER_CLOCK_DIVISOR, 1, 0); //doesn't work than change the left val to 0
+  // Set divisor to 0 (=256) so the actual timer clock is 187.5 kHz MHz????   TCD = 1 , 1MHz WITH DIVISOR
+  ljError = ePut(ljHandle, LJ_ioPUT_CONFIG, LJ_chTIMER_CLOCK_DIVISOR, 1, 0); //IF DOESN'T WORK THEN CHANGE THE LEF BIT TO 0
   ErrorHandler(ljError, __LINE__);
 
   // Enable 1 timer
@@ -159,7 +155,7 @@ int MotorEnable(LJ_HANDLE ljHandle)
   ErrorHandler(ljError, __LINE__);
 
   // Configure Timer0 as 8-bit PWM. Frequency is (187.5 kHz / 2^16) = 2.861 Hz?
-  ljError = ePut(ljHandle, LJ_ioPUT_TIMER_MODE, 0, LJ_tmPWM8, 0);    // using 1Mhz
+  ljError = ePut(ljHandle, LJ_ioPUT_TIMER_MODE, 0, LJ_tmPWM8, 0);    // USING 1MHz WITH DIVISOR, TCD = 1
   ErrorHandler(ljError, __LINE__);
 
   //Photosensor(ljHandle);     //Calling Photosensor function
@@ -171,7 +167,7 @@ int MotorEnable(LJ_HANDLE ljHandle)
   ljError=ePut(ljHandle, LJ_ioPUT_ANALOG_ENABLE_BIT,2,1,0);   //FIO2
   ErrorHandler(ljError, __LINE__);
 
-  ljError=ePut(ljHandle, LJ_ioPUT_ANALOG_ENABLE_BIT,7,1,0);
+  ljError=ePut(ljHandle, LJ_ioPUT_ANALOG_ENABLE_BIT,7,1,0);   //FIO7
   ErrorHandler(ljError, __LINE__);
 
   ljError = eGet (ljHandle, LJ_ioGET_AIN, 2, &ReadLeftSensorVal, 0); //Look at changing to digital
@@ -193,9 +189,7 @@ int MotorEnable(LJ_HANDLE ljHandle)
     DifferenceVal = abs(ReadLeftSensorVal - ReadRightSensorVal);    //The diferrence value betwenn photosensor output data
 
     Sleep(200); //slowdown the reading
-
     MotorRotation(ReadLeftSensorVal, ReadRightSensorVal,ljHandle);     //Calling MotorRotation function
-
 
     if (DifferenceVal >= 0.3 && DifferenceVal < 1)
     {
