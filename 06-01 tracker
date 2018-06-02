@@ -236,7 +236,7 @@ int MotorEnable(LJ_HANDLE ljHandle)
 
   // Use the 48 MHz timer clock base with divisor
 
-  ljError =  ePut(ljHandle, LJ_ioPUT_CONFIG, LJ_chTIMER_CLOCK_BASE, LJ_tc48MHZ_DIV, 0);
+  ljError =  ePut(ljHandle, LJ_ioPUT_CONFIG, LJ_chTIMER_CLOCK_BASE, LJ_tc1MHZ_DIV, 0);
 
   ErrorHandler(ljError, __LINE__);
 
@@ -244,7 +244,7 @@ int MotorEnable(LJ_HANDLE ljHandle)
 
    // Set divisor to 0 (=256) so the actual timer clock is 187.5 kHz MHz
 
-   ljError = ePut(ljHandle, LJ_ioPUT_CONFIG, LJ_chTIMER_CLOCK_DIVISOR, 0, 0);
+   ljError = ePut(ljHandle, LJ_ioPUT_CONFIG, LJ_chTIMER_CLOCK_DIVISOR, 1, 0); //doesn't work than change the left val to 0
 
    ErrorHandler(ljError, __LINE__);
 
@@ -260,7 +260,7 @@ int MotorEnable(LJ_HANDLE ljHandle)
 
    // Configure Timer0 as 16-bit PWM. Frequency is (187.5 kHz / 2^16) = 2.861 Hz.
 
-   ljError = ePut(ljHandle, LJ_ioPUT_TIMER_MODE, 0, LJ_tmPWM16, 0);
+   ljError = ePut(ljHandle, LJ_ioPUT_TIMER_MODE, 0, LJ_tmPWM8, 0);    // using 1Mhz
 
    ErrorHandler(ljError, __LINE__);
 
