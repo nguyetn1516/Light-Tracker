@@ -2,7 +2,7 @@ while(1){
         userINP = _getch();
         
         if(userINP == 27){
-            // input reset code
+            // (input reset code)
             exit(0);
         }
     }
