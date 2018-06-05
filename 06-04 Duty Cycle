@@ -83,7 +83,6 @@ int MotorEnable(LJ_HANDLE ljHandle)
   double ReadRightSensorVal;
   double ReadLeftSensorVal;
   double DifferenceVal;
-  double tempVal; //scratch variable
 
   ljError=ePut(ljHandle, LJ_ioPUT_ANALOG_ENABLE_BIT,2,1,0);   //FIO2
   ErrorHandler(ljError, __LINE__);
