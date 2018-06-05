@@ -101,7 +101,6 @@ void MotorDiag(LJ_HANDLE ljHandle)
    //Code for pressing a key to stop the motor
    
   //end if-else
-  //code for resetting all pins
 }
 
 void SensorsDiag(LJ_HANDLE ljHandle)
@@ -135,7 +134,6 @@ void SensorsDiag(LJ_HANDLE ljHandle)
     
     //code for pressing a key to stop
   }
-  // code for reseting all pins
 }
 
 int main (void)
@@ -152,14 +150,12 @@ int main (void)
   ErrorHandler(ljError, __LINE__);
 
   // IF choose diagnostic 1
-  SensorsDiag(ljHandle);
-  
+  SensorsDiag(ljHandle);  // Call function
   // Else if choose diagnostic 2
-  MotorDiag(ljHandle);
+  MotorDiag(ljHandle);  // Call function
   // Else if choose diagnostic 3
-  SpeedDiag(ljHandle);
-  
-  
-
+  SpeedDiag(ljHandle);  // Call function
+  //Else
+   exit(0); //purpose: to reset all pins
   return 0;
 }//exit main func
