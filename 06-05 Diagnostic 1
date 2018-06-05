@@ -1,25 +1,141 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <Windows.h>
-#include "LabJackUD.h"
-#include "LJUD_DynamicLinking.h"
-#include <conio.h>
-
-// ErrorHandler code was written by the LabJack company
-void ErrorHandler (LJ_ERROR ljError, long lngLineNumber)
+void SpeedDiag(LJ_HANDLE ljHandle)
 {
-  char err[255];
-  if (ljError != LJE_NOERROR)
+  LJ_ERROR ljError;
+  
+   // Set the timer/counter pin offset to 4. This puts Timer0 on FIO4.
+  ljError = ePut(ljHandle,LJ_ioPUT_CONFIG, LJ_chTIMER_COUNTER_PIN_OFFSET, 4, 0);    //FIO4
+  ErrorHandler(ljError, __LINE__);
+
+  // Use the 1 MHz timer clock base with divisor
+  ljError =  ePut(ljHandle, LJ_ioPUT_CONFIG, LJ_chTIMER_CLOCK_BASE, LJ_tc1MHZ_DIV, 0);
+  ErrorHandler(ljError, __LINE__);
+
+  // Set TCD = 1 , 1MHz WITH DIVISOR
+  ljError = ePut(ljHandle, LJ_ioPUT_CONFIG, LJ_chTIMER_CLOCK_DIVISOR, 1, 0); //IF DOESN'T WORK THEN CHANGE THE LEF BIT TO 0
+  ErrorHandler(ljError, __LINE__);
+
+  // Enable 1 timer
+  ljError = ePut(ljHandle, LJ_ioPUT_CONFIG, LJ_chNUMBER_TIMERS_ENABLED, 1,0);
+  ErrorHandler(ljError, __LINE__);
+
+  // Configure Timer0 as 8-bit PWM
+  ljError = ePut(ljHandle, LJ_ioPUT_TIMER_MODE, 0, LJ_tmPWM8, 0);    // USING 1MHz WITH DIVISOR, TCD = 1
+  ErrorHandler(ljError, __LINE__);
+  
+  //Code for promting user the value of duty cycle (30 or 60)
+  
+  //if 30
+   ljError = ePut(ljHandle, LJ_ioPUT_DIGITAL_BIT, 3, 1, 0);   //FIO3 conneccted to pin 2
+  ErrorHandler(ljError, __LINE__);
+
+   ljError = ePut(ljHandle, LJ_ioPUT_DIGITAL_BIT, 0, 0, 0);   //FIO0 conneccted to pin 7
+   ErrorHandler(ljError, __LINE__);
+   
+   // Set Timer0 to a 30% duty cycle (out of 65536)
+   ljError = ePut(ljHandle, LJ_ioPUT_TIMER_VALUE, 0, 45875 ,0);
+   ErrorHandler(ljError, __LINE__);
+   
+   //else if 60
+    ljError = ePut(ljHandle, LJ_ioPUT_DIGITAL_BIT, 3, 1, 0);   //FIO3 conneccted to pin 2
+  ErrorHandler(ljError, __LINE__);
+
+   ljError = ePut(ljHandle, LJ_ioPUT_DIGITAL_BIT, 0, 0, 0);   //FIO0 conneccted to pin 7
+   ErrorHandler(ljError, __LINE__);
+   
+   // Set Timer0 to a 60% duty cycle (out of 65536)
+    ljError = ePut(ljHandle, LJ_ioPUT_TIMER_VALUE, 0, 26214 ,0);
+    ErrorHandler(ljError, __LINE__);
+   
+  //eng if-else
+
+void MotorDiag(LJ_HANDLE ljHandle)
+{
+   LJ_ERROR ljError;
+   
+   // Set the timer/counter pin offset to 4. This puts Timer0 on FIO4.
+  ljError = ePut(ljHandle,LJ_ioPUT_CONFIG, LJ_chTIMER_COUNTER_PIN_OFFSET, 4, 0);    //FIO4
+  ErrorHandler(ljError, __LINE__);
+
+  // Use the 1 MHz timer clock base with divisor
+  ljError =  ePut(ljHandle, LJ_ioPUT_CONFIG, LJ_chTIMER_CLOCK_BASE, LJ_tc1MHZ_DIV, 0);
+  ErrorHandler(ljError, __LINE__);
+
+  // Set TCD = 1 , 1MHz WITH DIVISOR
+  ljError = ePut(ljHandle, LJ_ioPUT_CONFIG, LJ_chTIMER_CLOCK_DIVISOR, 1, 0); //IF DOESN'T WORK THEN CHANGE THE LEF BIT TO 0
+  ErrorHandler(ljError, __LINE__);
+
+  // Enable 1 timer
+  ljError = ePut(ljHandle, LJ_ioPUT_CONFIG, LJ_chNUMBER_TIMERS_ENABLED, 1,0);
+  ErrorHandler(ljError, __LINE__);
+
+  // Configure Timer0 as 8-bit PWM
+  ljError = ePut(ljHandle, LJ_ioPUT_TIMER_MODE, 0, LJ_tmPWM8, 0);    // USING 1MHz WITH DIVISOR, TCD = 1
+  ErrorHandler(ljError, __LINE__);
+  
+  //Code for prompting user input
+  
+  //if positive
+  ljError = ePut(ljHandle, LJ_ioPUT_DIGITAL_BIT, 3, 1, 0);   //FIO3 conneccted to pin 2
+  ErrorHandler(ljError, __LINE__);
+
+   ljError = ePut(ljHandle, LJ_ioPUT_DIGITAL_BIT, 0, 0, 0);   //FIO0 conneccted to pin 7
+   ErrorHandler(ljError, __LINE__);
+        
+   // Set Timer0 to a 50% duty cycle (out of 65536)
+   ljError = ePut(ljHandle, LJ_ioPUT_TIMER_VALUE, 0, 32768 ,0);
+   ErrorHandler(ljError, __LINE__);
+   
+   //Code for pressing a key to stop the motor
+   
+   //else if negative
+   ljError = ePut(ljHandle, LJ_ioPUT_DIGITAL_BIT, 3, 0, 0);   //FIO3 conneccted to pin 2
+    ErrorHandler(ljError, __LINE__);
+
+    ljError = ePut(ljHandle, LJ_ioPUT_DIGITAL_BIT, 0, 1, 0);   //FIO0 conneccted to pin 7
+    ErrorHandler(ljError, __LINE__);
+    
+    // Set Timer0 to a 50% duty cycle (out of 65536)
+   ljError = ePut(ljHandle, LJ_ioPUT_TIMER_VALUE, 0, 32768 ,0);
+   ErrorHandler(ljError, __LINE__);
+   
+   //Code for pressing a key to stop the motor
+   
+  //end if-else
+  //code for resetting all pins
+}
+
+void SensorsDiag(LJ_HANDLE ljHandle)
+{
+   LJ_ERROR ljError;
+  double ReadRightSensorVal;
+  double ReadLeftSensorVal;
+  double DifferenceVal;
+  
+   ljError=ePut(ljHandle, LJ_ioPUT_ANALOG_ENABLE_BIT,2,1,0);   //FIO2
+  ErrorHandler(ljError, __LINE__);
+
+  ljError=ePut(ljHandle, LJ_ioPUT_ANALOG_ENABLE_BIT,7,1,0);   //FIO7
+  ErrorHandler(ljError, __LINE__);
+
+  ljError = eGet (ljHandle, LJ_ioGET_AIN, 2, &ReadLeftSensorVal, 0); //Look at changing to digital
+  ErrorHandler(ljError, __LINE__);
+
+  ljError = eGet (ljHandle, LJ_ioGET_AIN, 7, &ReadRightSensorVal, 0); //Look at changing to digital
+  ErrorHandler(ljError, __LINE__);//Need to add code for the 2nd photosensor
+
+  while (ReadLeftSensorVal > 0 && ReadRightSensorVal>0)
   {
-    ErrorToString(ljError, err);
-    printf("Error # %ld: %s\n", ljError, err);
-    printf("Source line number = %ld\n", lngLineNumber);
-    if(ljError > LJE_MIN_GROUP_ERROR)
-    {
-     getchar();
-      exit(0); // Quit if serious error
-    }
+    ljError = eGet (ljHandle, LJ_ioGET_AIN, 2, &ReadLeftSensorVal, 0); //Look at changing to digital
+    ErrorHandler(ljError, __LINE__);
+
+    ljError = eGet (ljHandle, LJ_ioGET_AIN, 7, &ReadRightSensorVal, 0); //Look at changing to digital
+    ErrorHandler(ljError, __LINE__);//Need to add code for the 2nd photosensor
+
+    printf ("Left = %f\tRight = %f\n", ReadLeftSensorVal, ReadRightSensorVal);
+    
+    //code for pressing a key to stop
   }
+  // code for reseting all pins
 }
 
 int main (void)
@@ -35,6 +151,15 @@ int main (void)
   ljError = ePut(ljHandle, LJ_ioPIN_CONFIGURATION_RESET, 0, 0, 0);
   ErrorHandler(ljError, __LINE__);
 
-  MotorEnable(ljHandle);    //Calling MotorEnable function
+  // IF choose diagnostic 1
+  SensorsDiag(ljHandle);
+  
+  // Else if choose diagnostic 2
+  MotorDiag(ljHandle);
+  // Else if choose diagnostic 3
+  SpeedDiag(ljHandle);
+  
+  
+
   return 0;
 }//exit main func
