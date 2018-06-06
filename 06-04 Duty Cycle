@@ -177,6 +177,7 @@ int main (void)
   LJ_ERROR ljError;         // LabJack error code
   LJ_HANDLE ljHandle = 0;   // ID# assigned to the opened LabJack
   LoadLabJackUD(); // Load the LabJack DLL
+  int inputData;  
 
   // Open the first found LabJack U3
   ljError = OpenLabJack (LJ_dtU3, LJ_ctUSB, "1", 1, &ljHandle);
@@ -184,7 +185,13 @@ int main (void)
 
   ljError = ePut(ljHandle, LJ_ioPIN_CONFIGURATION_RESET, 0, 0, 0);
   ErrorHandler(ljError, __LINE__);
-
-  MotorEnable(ljHandle);    //Calling MotorEnable function
+  
+  printf("Enter 0 to reset pins or enter 1 to continue: ");
+  scanf("%d", &inputData);
+  
+  if (inputData == 0)
+  { exit(0); }
+  else if (inputData == 1)
+  { MotorEnable(ljHandle);}    //Calling MotorEnable function
   return 0;
 }//exit main func
