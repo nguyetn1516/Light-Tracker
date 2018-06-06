@@ -78,8 +78,6 @@ int MotorEnable(LJ_HANDLE ljHandle)
   ljError = ePut(ljHandle, LJ_ioPUT_TIMER_MODE, 0, LJ_tmPWM8, 0);    // USING 1MHz WITH DIVISOR, TCD = 1
   ErrorHandler(ljError, __LINE__);
 
-  //Photosensor(ljHandle);     //Calling Photosensor function
-
   double ReadRightSensorVal;
   double ReadLeftSensorVal;
   double DifferenceVal;
