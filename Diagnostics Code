@@ -1,3 +1,12 @@
+/*
+    Program created by Team 05:
+    Luis Nadora, Nguyet Nguyen, Brent Goodman
+
+    This is the diagnostics code with the user-interface.
+    There are three testing options to test each part of
+    our project to make sure everything is working properly.
+*/
+
 #include <stdio.h>
 #include <Windows.h>
 #include <conio.h>
@@ -5,7 +14,6 @@
 #include "LabJackUD.h"
 #include "LJUD_DynamicLinking.h"
 
-//defines background and foreground colors
 #define BLUE FOREGROUND_BLUE
 #define LIGHTBLUE    FOREGROUND_INTENSITY | FOREGROUND_BLUE
 #define bgLIGHTBLUE    BACKGROUND_INTENSITY | BACKGROUND_BLUE
@@ -48,7 +56,6 @@ void clrscr (int color)
     SetConsoleCursorPosition(hStdOut, coord);
 }
 
-//moves cursor to (x,y)
 void gotoxy (int x, int y)
 {
     COORD coord; // Cursor coordinates
@@ -71,25 +78,22 @@ void gotoxy (int x, int y)
     SetConsoleCursorPosition(hStdOut, coord);
 }
 
-//move cursor and print text
 int mvputs (int row, int col, const char *str)
 {
     gotoxy(row, col);
     return _cputs(str);
 }
-//function prototypes
-{
+
 void ErrorHandler (LJ_ERROR ljError, long lngLineNumber);
-void MOTOR_TEST();
-void PHOTO_TEST();
-void MOTOR_SPEED_TEST();
+void MotorDiag();
+void SensorDiag();
+void SpeedDiag();
 
 LJ_ERROR ljError;         // LabJack error code
 LJ_HANDLE ljHandle = 0;   // ID# assigned to the opened LabJack
-}
 
 int main(void){
-    {//setup
+    {// setup
     gotoxy(30, 8);
     _cprintf("Select the diagnostics mode (press 1, 2, or 3):");
     mvputs(40, 9, "or press escape to exit");
@@ -110,7 +114,8 @@ int main(void){
             mvputs(45, 17, "2) Test Photosensor");
             mvputs(45, 19, "3) Test Motor Rotation");
 
-            MOTOR_TEST();
+            clrscr(WHITE);
+            MotorDiag();
         }
 
         if (userINP == 50)
@@ -122,7 +127,8 @@ int main(void){
             textcolor(LIGHTBLUE | bgWHITE);
             mvputs(45, 19, "3) Test Motor Rotation");
 
-            PHOTO_TEST();
+            clrscr(WHITE);
+            SensorDiag();
         }
 
         if (userINP == 51)
@@ -133,7 +139,8 @@ int main(void){
             textcolor(bgLIGHTBLUE | WHITE);
             mvputs(45, 19, "3) Test Motor Rotation");
 
-            //MOTOR_SPEED_TEST();
+            clrscr(WHITE);
+            SpeedDiag();
         }
 
         else if (userINP == 27)
