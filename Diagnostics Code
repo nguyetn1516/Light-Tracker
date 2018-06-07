@@ -115,7 +115,7 @@ int main(void){
             mvputs(45, 19, "3) Test Motor Rotation");
 
             clrscr(WHITE);
-            MotorDiag();
+            MotorDiag(ljHandle);
         }
 
         if (userINP == 50)
@@ -128,7 +128,7 @@ int main(void){
             mvputs(45, 19, "3) Test Motor Rotation");
 
             clrscr(WHITE);
-            SensorDiag();
+            SensorDiag(ljHandle);
         }
 
         if (userINP == 51)
@@ -140,7 +140,7 @@ int main(void){
             mvputs(45, 19, "3) Test Motor Rotation");
 
             clrscr(WHITE);
-            SpeedDiag();
+            SpeedDiag(ljHandle);
         }
 
         else if (userINP == 27)
