@@ -93,6 +93,18 @@ LJ_ERROR ljError;         // LabJack error code
 LJ_HANDLE ljHandle = 0;   // ID# assigned to the opened LabJack
 
 int main(void){
+
+    LJ_ERROR ljError;         // LabJack error code
+    LJ_HANDLE ljHandle = 0;   // ID# assigned to the opened LabJack
+    LoadLabJackUD();
+
+    // Open the first found LabJack U3
+    ljError = OpenLabJack (LJ_dtU3, LJ_ctUSB, "1", 1, &ljHandle);
+    ErrorHandler(ljError, __LINE__);
+
+    ljError = ePut(ljHandle, LJ_ioPIN_CONFIGURATION_RESET, 0, 0, 0);
+    ErrorHandler(ljError, __LINE__);
+
     {// setup
     gotoxy(30, 8);
     _cprintf("Select the diagnostics mode (press 1, 2, or 3):");
@@ -145,6 +157,8 @@ int main(void){
 
         else if (userINP == 27)
         {
+            ljError = ePut(ljHandle, LJ_ioPIN_CONFIGURATION_RESET, 0, 0, 0);
+            ErrorHandler(ljError, __LINE__);
             return 0;
         }
     }
