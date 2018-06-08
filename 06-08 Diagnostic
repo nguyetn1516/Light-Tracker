@@ -2,11 +2,29 @@
 #include <Windows.h>
 #include <conio.h>
 #include <stdlib.h>
+#include "LabJackUD.h"
+#include "LJUD_DynamicLinking.h"
 #define SIZE 10
 
 #define YELLOW       FOREGROUND_RED | FOREGROUND_GREEN
 #define LIGHTBLUE    FOREGROUND_INTENSITY | FOREGROUND_BLUE
 #define WHITE        FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE
+
+void ErrorHandler (LJ_ERROR ljError, long lngLineNumber)
+{
+    char err[255];
+    if (ljError != LJE_NOERROR)
+    {
+        ErrorToString(ljError, err);
+        printf("Error # %ld: %s\n", ljError, err);
+        printf("Source line number = %ld\n", lngLineNumber);
+        if(ljError > LJE_MIN_GROUP_ERROR)
+        {
+        getchar();
+        exit(0); // Quit if serious error
+        }
+  }
+}
 
 void textcolor (int color)
 {
@@ -59,9 +77,11 @@ void SpeedDiag(LJ_HANDLE ljHandle)
   ljError = ePut(ljHandle, LJ_ioPUT_TIMER_MODE, 0, LJ_tmPWM8, 0);    // USING 1MHz WITH DIVISOR, TCD = 1
   ErrorHandler(ljError, __LINE__);
 
-  //Code for promting user the value of duty cycle (30 or 60)
+  DUTYASK: printf("\nenter 30 0r 60 for the duty cycle: ");
+  int userDuty;
+  scanf("%d", &userDuty);
 
-  //if 30
+  if (userDuty == 30){
    ljError = ePut(ljHandle, LJ_ioPUT_DIGITAL_BIT, 3, 1, 0);   //FIO3 conneccted to pin 2
   ErrorHandler(ljError, __LINE__);
 
@@ -71,8 +91,9 @@ void SpeedDiag(LJ_HANDLE ljHandle)
    // Set Timer0 to a 30% duty cycle (out of 65536)
    ljError = ePut(ljHandle, LJ_ioPUT_TIMER_VALUE, 0, 45875 ,0);
    ErrorHandler(ljError, __LINE__);
+  }
 
-   //else if 60
+   if(userDuty == 60){
     ljError = ePut(ljHandle, LJ_ioPUT_DIGITAL_BIT, 3, 1, 0);   //FIO3 conneccted to pin 2
   ErrorHandler(ljError, __LINE__);
 
@@ -83,7 +104,12 @@ void SpeedDiag(LJ_HANDLE ljHandle)
     ljError = ePut(ljHandle, LJ_ioPUT_TIMER_VALUE, 0, 26214 ,0);
     ErrorHandler(ljError, __LINE__);
 
-  //eng if-else
+   }
+
+   else{
+    printf("invalid option")
+    goto DUTYASK;
+   }
 
 void MotorDiag(LJ_HANDLE ljHandle)
 {
@@ -109,11 +135,13 @@ void MotorDiag(LJ_HANDLE ljHandle)
   ljError = ePut(ljHandle, LJ_ioPUT_TIMER_MODE, 0, LJ_tmPWM8, 0);    // USING 1MHz WITH DIVISOR, TCD = 1
   ErrorHandler(ljError, __LINE__);
 
-  //Code for prompting user input
+  printf("Enter a negative or positive value: ");
+  int userInput;
+  scanf("%d", &userInput);
 
-  //if positive
-  ljError = ePut(ljHandle, LJ_ioPUT_DIGITAL_BIT, 3, 1, 0);   //FIO3 conneccted to pin 2
-  ErrorHandler(ljError, __LINE__);
+    if (userInput > 0){
+   ljError = ePut(ljHandle, LJ_ioPUT_DIGITAL_BIT, 3, 1, 0);   //FIO3 conneccted to pin 2
+   ErrorHandler(ljError, __LINE__);
 
    ljError = ePut(ljHandle, LJ_ioPUT_DIGITAL_BIT, 0, 0, 0);   //FIO0 conneccted to pin 7
    ErrorHandler(ljError, __LINE__);
@@ -121,10 +149,10 @@ void MotorDiag(LJ_HANDLE ljHandle)
    // Set Timer0 to a 50% duty cycle (out of 65536)
    ljError = ePut(ljHandle, LJ_ioPUT_TIMER_VALUE, 0, 32768 ,0);
    ErrorHandler(ljError, __LINE__);
+   }
 
-   //Code for pressing a key to stop the motor
 
-   //else if negative
+   else if (userInput < 0){
    ljError = ePut(ljHandle, LJ_ioPUT_DIGITAL_BIT, 3, 0, 0);   //FIO3 conneccted to pin 2
     ErrorHandler(ljError, __LINE__);
 
@@ -135,9 +163,7 @@ void MotorDiag(LJ_HANDLE ljHandle)
    ljError = ePut(ljHandle, LJ_ioPUT_TIMER_VALUE, 0, 32768 ,0);
    ErrorHandler(ljError, __LINE__);
 
-   //Code for pressing a key to stop the motor
-
-  //end if-else
+   }
 }
 
 void SensorsDiag(LJ_HANDLE ljHandle)
@@ -157,7 +183,7 @@ void SensorsDiag(LJ_HANDLE ljHandle)
     ErrorHandler(ljError, __LINE__);
 
     ljError = eGet (ljHandle, LJ_ioGET_AIN, 7, &ReadRightSensorVal, 0); //Look at changing to digital
-    ErrorHandler(ljError, __LINE__);//Need to add code for the 2nd photosensor
+    ErrorHandler(ljError, __LINE__);
 
     while (ReadLeftSensorVal > 0 && ReadRightSensorVal>0)
     {
@@ -165,7 +191,7 @@ void SensorsDiag(LJ_HANDLE ljHandle)
         ErrorHandler(ljError, __LINE__);
 
         ljError = eGet (ljHandle, LJ_ioGET_AIN, 7, &ReadRightSensorVal, 0); //Look at changing to digital
-        ErrorHandler(ljError, __LINE__);//Need to add code for the 2nd photosensor
+        ErrorHandler(ljError, __LINE__);
 
         //printf ("Left = %f\tRight = %f\n", ReadLeftSensorVal, ReadRightSensorVal);
 
