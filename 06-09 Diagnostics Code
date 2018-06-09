@@ -24,12 +24,6 @@
 
 
 
-/*//Sets the color of the text that is displayed by console output functions
-void textcolor (int color)
-{
-    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
-}*/
-
 // Clears the entire console screen
 void clrscr (int color)
 {
@@ -58,28 +52,6 @@ void clrscr (int color)
     SetConsoleCursorPosition(hStdOut, coord);
 }
 
-/*void gotoxy (int x, int y)
-{
-    COORD coord; // Cursor coordinates
-    HANDLE hStdOut; // Handle for console standard output
-    CONSOLE_SCREEN_BUFFER_INFO csbi;
-    // Get a handle to the console screen buffer
-    if ((hStdOut = GetStdHandle(STD_OUTPUT_HANDLE)) == INVALID_HANDLE_VALUE)
-        return;
-    // Get buffer size information
-    if (!GetConsoleScreenBufferInfo(hStdOut, &csbi))
-        return;
-    // If needed, clip specified coordinates to actual buffer boundaries
-    if (x < 0) x = 0;
-    if (x >= csbi.dwSize.X) x = csbi.dwSize.X - 1;
-    if (y < 0) y = 0;
-    if (y >= csbi.dwSize.Y) y = csbi.dwSize.Y - 1;
-    // Move cursor to specified coordinates
-    coord.X = x;
-    coord.Y = y;
-    SetConsoleCursorPosition(hStdOut, coord);
-}*/
-
 int mvputs (int row, int col, const char *str)
 {
     gotoxy(row, col);
@@ -90,9 +62,6 @@ void ErrorHandler (LJ_ERROR ljError, long lngLineNumber);
 void MotorDiag();
 void SensorDiag();
 void SpeedDiag();
-
-LJ_ERROR ljError;         // LabJack error code
-LJ_HANDLE ljHandle = 0;   // ID# assigned to the opened LabJack
 
 int main(void){
 
