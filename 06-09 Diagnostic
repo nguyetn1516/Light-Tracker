@@ -1,0 +1,228 @@
+#include <stdio.h>
+#include <Windows.h>
+#include <conio.h>
+#include <stdlib.h>
+#include "LabJackUD.h"
+#include "LJUD_DynamicLinking.h"
+#define SIZE 10
+
+#define YELLOW       FOREGROUND_RED | FOREGROUND_GREEN
+#define LIGHTBLUE    FOREGROUND_INTENSITY | FOREGROUND_BLUE
+#define WHITE        FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE
+
+void ErrorHandler (LJ_ERROR ljError, long lngLineNumber)
+{
+    char err[255];
+    if (ljError != LJE_NOERROR)
+    {
+        ErrorToString(ljError, err);
+        printf("Error # %ld: %s\n", ljError, err);
+        printf("Source line number = %ld\n", lngLineNumber);
+        if(ljError > LJE_MIN_GROUP_ERROR)
+        {
+        getchar();
+        exit(0); // Quit if serious error
+        }
+    }
+}
+
+void textcolor (int color)
+{
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
+}
+
+void gotoxy (int x, int y)
+{
+    COORD coord; // Cursor coordinates
+    HANDLE hStdOut; // Handle for console standard output
+    CONSOLE_SCREEN_BUFFER_INFO csbi;
+    // Get a handle to the console screen buffer
+    if ((hStdOut = GetStdHandle(STD_OUTPUT_HANDLE)) == INVALID_HANDLE_VALUE)
+        return;
+    // Get buffer size information
+    if (!GetConsoleScreenBufferInfo(hStdOut, &csbi))
+        return;
+    // If needed, clip specified coordinates to actual buffer boundaries
+    if (x < 0) x = 0;
+    if (x >= csbi.dwSize.X) x = csbi.dwSize.X - 1;
+    if (y < 0) y = 0;
+    if (y >= csbi.dwSize.Y) y = csbi.dwSize.Y - 1;
+    // Move cursor to specified coordinates
+    coord.X = x;
+    coord.Y = y;
+    SetConsoleCursorPosition(hStdOut, coord);
+}
+
+void SpeedDiag(LJ_HANDLE ljHandle)
+{
+    LJ_ERROR ljError;
+
+    // Set the timer/counter pin offset to 4. This puts Timer0 on FIO4.
+    ljError = ePut(ljHandle,LJ_ioPUT_CONFIG, LJ_chTIMER_COUNTER_PIN_OFFSET, 4, 0);    //FIO4
+    ErrorHandler(ljError, __LINE__);
+
+    // Use the 1 MHz timer clock base with divisor
+    ljError =  ePut(ljHandle, LJ_ioPUT_CONFIG, LJ_chTIMER_CLOCK_BASE, LJ_tc1MHZ_DIV, 0);
+    ErrorHandler(ljError, __LINE__);
+
+    // Set TCD = 1 , 1MHz WITH DIVISOR
+    ljError = ePut(ljHandle, LJ_ioPUT_CONFIG, LJ_chTIMER_CLOCK_DIVISOR, 1, 0); //IF DOESN'T WORK THEN CHANGE THE LEF BIT TO 0
+    ErrorHandler(ljError, __LINE__);
+
+    // Enable 1 timer
+    ljError = ePut(ljHandle, LJ_ioPUT_CONFIG, LJ_chNUMBER_TIMERS_ENABLED, 1,0);
+    ErrorHandler(ljError, __LINE__);
+
+    // Configure Timer0 as 8-bit PWM
+    ljError = ePut(ljHandle, LJ_ioPUT_TIMER_MODE, 0, LJ_tmPWM8, 0);    // USING 1MHz WITH DIVISOR, TCD = 1
+    ErrorHandler(ljError, __LINE__);
+
+    DUTYASK: printf("\nenter 30 or 60 for the duty cycle: ");
+    int userDuty;
+    scanf("%d", &userDuty);
+
+    if (userDuty == 30){
+        ljError = ePut(ljHandle, LJ_ioPUT_DIGITAL_BIT, 3, 1, 0);   //FIO3 conneccted to pin 2
+        ErrorHandler(ljError, __LINE__);
+
+        ljError = ePut(ljHandle, LJ_ioPUT_DIGITAL_BIT, 0, 0, 0);   //FIO0 conneccted to pin 7
+        ErrorHandler(ljError, __LINE__);
+
+        // Set Timer0 to a 30% duty cycle (out of 65536)
+        ljError = ePut(ljHandle, LJ_ioPUT_TIMER_VALUE, 0, 45875 ,0);
+        ErrorHandler(ljError, __LINE__);
+    }
+
+   if(userDuty == 60){
+        ljError = ePut(ljHandle, LJ_ioPUT_DIGITAL_BIT, 3, 1, 0);   //FIO3 conneccted to pin 2
+        ErrorHandler(ljError, __LINE__);
+
+        ljError = ePut(ljHandle, LJ_ioPUT_DIGITAL_BIT, 0, 0, 0);   //FIO0 conneccted to pin 7
+        ErrorHandler(ljError, __LINE__);
+
+        // Set Timer0 to a 60% duty cycle (out of 65536)
+        ljError = ePut(ljHandle, LJ_ioPUT_TIMER_VALUE, 0, 26214 ,0);
+        ErrorHandler(ljError, __LINE__);
+
+    }
+
+   else{
+        printf("invalid option");
+        goto DUTYASK;
+   }
+}
+
+void MotorDiag(LJ_HANDLE ljHandle)
+{
+    LJ_ERROR ljError;
+
+    // Set the timer/counter pin offset to 4. This puts Timer0 on FIO4.
+    ljError = ePut(ljHandle,LJ_ioPUT_CONFIG, LJ_chTIMER_COUNTER_PIN_OFFSET, 4, 0);    //FIO4
+    ErrorHandler(ljError, __LINE__);
+
+    // Use the 1 MHz timer clock base with divisor
+    ljError =  ePut(ljHandle, LJ_ioPUT_CONFIG, LJ_chTIMER_CLOCK_BASE, LJ_tc1MHZ_DIV, 0);
+    ErrorHandler(ljError, __LINE__);
+
+    // Set TCD = 1 , 1MHz WITH DIVISOR
+    ljError = ePut(ljHandle, LJ_ioPUT_CONFIG, LJ_chTIMER_CLOCK_DIVISOR, 1, 0); //IF DOESN'T WORK THEN CHANGE THE LEF BIT TO 0
+    ErrorHandler(ljError, __LINE__);
+
+    // Enable 1 timer
+    ljError = ePut(ljHandle, LJ_ioPUT_CONFIG, LJ_chNUMBER_TIMERS_ENABLED, 1,0);
+    ErrorHandler(ljError, __LINE__);
+
+    // Configure Timer0 as 8-bit PWM
+    ljError = ePut(ljHandle, LJ_ioPUT_TIMER_MODE, 0, LJ_tmPWM8, 0);    // USING 1MHz WITH DIVISOR, TCD = 1
+    ErrorHandler(ljError, __LINE__);
+
+    printf("Enter a negative or positive value: ");
+    int userInput;
+    scanf("%d", &userInput);
+
+    if (userInput > 0){
+        ljError = ePut(ljHandle, LJ_ioPUT_DIGITAL_BIT, 3, 1, 0);   //FIO3 conneccted to pin 2
+        ErrorHandler(ljError, __LINE__);
+
+        ljError = ePut(ljHandle, LJ_ioPUT_DIGITAL_BIT, 0, 0, 0);   //FIO0 conneccted to pin 7
+        ErrorHandler(ljError, __LINE__);
+
+        // Set Timer0 to a 50% duty cycle (out of 65536)
+        ljError = ePut(ljHandle, LJ_ioPUT_TIMER_VALUE, 0, 32768 ,0);
+        ErrorHandler(ljError, __LINE__);
+    }
+
+
+   else if (userInput < 0){
+        ljError = ePut(ljHandle, LJ_ioPUT_DIGITAL_BIT, 3, 0, 0);   //FIO3 conneccted to pin 2
+        ErrorHandler(ljError, __LINE__);
+
+        ljError = ePut(ljHandle, LJ_ioPUT_DIGITAL_BIT, 0, 1, 0);   //FIO0 conneccted to pin 7
+        ErrorHandler(ljError, __LINE__);
+
+        // Set Timer0 to a 50% duty cycle (out of 65536)
+        ljError = ePut(ljHandle, LJ_ioPUT_TIMER_VALUE, 0, 32768 ,0);
+        ErrorHandler(ljError, __LINE__);
+
+    }
+}
+
+void SensorsDiag(LJ_HANDLE ljHandle)
+{
+    LJ_ERROR ljError;
+    double ReadRightSensorVal;
+    double ReadLeftSensorVal;
+    double DifferenceVal;
+
+    ljError=ePut(ljHandle, LJ_ioPUT_ANALOG_ENABLE_BIT,2,1,0);   //FIO2
+    ErrorHandler(ljError, __LINE__);
+
+    ljError=ePut(ljHandle, LJ_ioPUT_ANALOG_ENABLE_BIT,7,1,0);   //FIO7
+    ErrorHandler(ljError, __LINE__);
+
+    ljError = eGet (ljHandle, LJ_ioGET_AIN, 2, &ReadLeftSensorVal, 0); //Look at changing to digital
+    ErrorHandler(ljError, __LINE__);
+
+    ljError = eGet (ljHandle, LJ_ioGET_AIN, 7, &ReadRightSensorVal, 0); //Look at changing to digital
+    ErrorHandler(ljError, __LINE__);
+
+    while (1)//ReadLeftSensorVal > 0 && ReadRightSensorVal>0)
+    {
+        ljError = eGet (ljHandle, LJ_ioGET_AIN, 2, &ReadLeftSensorVal, 0); //Look at changing to digital
+        ErrorHandler(ljError, __LINE__);
+
+        ljError = eGet (ljHandle, LJ_ioGET_AIN, 7, &ReadRightSensorVal, 0); //Look at changing to digital
+        ErrorHandler(ljError, __LINE__);
+
+        printf ("Left = %f\tRight = %f\n", ReadLeftSensorVal, ReadRightSensorVal);
+
+
+    }
+}
+
+/*
+int main (void)
+{
+    LJ_ERROR ljError;         // LabJack error code
+    LJ_HANDLE ljHandle = 0;   // ID# assigned to the opened LabJack
+    LoadLabJackUD(); // Load the LabJack DLL
+
+    // Open the first found LabJack U3
+    ljError = OpenLabJack (LJ_dtU3, LJ_ctUSB, "1", 1, &ljHandle);
+    ErrorHandler(ljError, __LINE__);
+
+    ljError = ePut(ljHandle, LJ_ioPIN_CONFIGURATION_RESET, 0, 0, 0);
+    ErrorHandler(ljError, __LINE__);
+
+    // IF choose diagnostic 1
+    SensorsDiag(ljHandle);  // Call function
+    // Else if choose diagnostic 2
+    MotorDiag(ljHandle);  // Call function
+    // Else if choose diagnostic 3
+    SpeedDiag(ljHandle);  // Call function
+    //Else
+    exit(0); //purpose: to reset all pins
+    return 0;
+}//exit main func
+*/
+
