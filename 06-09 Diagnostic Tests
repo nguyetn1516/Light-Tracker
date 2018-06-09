@@ -200,29 +200,3 @@ void SensorsDiag(LJ_HANDLE ljHandle)
     }
 }
 
-/*
-int main (void)
-{
-    LJ_ERROR ljError;         // LabJack error code
-    LJ_HANDLE ljHandle = 0;   // ID# assigned to the opened LabJack
-    LoadLabJackUD(); // Load the LabJack DLL
-
-    // Open the first found LabJack U3
-    ljError = OpenLabJack (LJ_dtU3, LJ_ctUSB, "1", 1, &ljHandle);
-    ErrorHandler(ljError, __LINE__);
-
-    ljError = ePut(ljHandle, LJ_ioPIN_CONFIGURATION_RESET, 0, 0, 0);
-    ErrorHandler(ljError, __LINE__);
-
-    // IF choose diagnostic 1
-    SensorsDiag(ljHandle);  // Call function
-    // Else if choose diagnostic 2
-    MotorDiag(ljHandle);  // Call function
-    // Else if choose diagnostic 3
-    SpeedDiag(ljHandle);  // Call function
-    //Else
-    exit(0); //purpose: to reset all pins
-    return 0;
-}//exit main func
-*/
-
