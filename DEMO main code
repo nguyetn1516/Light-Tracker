@@ -129,7 +129,7 @@ int MotorEnable(LJ_HANDLE ljHandle)
         ErrorHandler(ljError, __LINE__);
 
         ljError = eGet (ljHandle, LJ_ioGET_AIN, 7, &ReadRightSensorVal, 0); 
-        ErrorHandler(ljError, __LINE__);//Need to add code for the 2nd photosensor
+        ErrorHandler(ljError, __LINE__);
 
         DifferenceVal = ReadLeftSensorVal - ReadRightSensorVal;
 
