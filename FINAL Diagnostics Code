@@ -77,7 +77,7 @@ void SpeedDiag(LJ_HANDLE ljHandle, int userINP)
     ljError =  ePut(ljHandle, LJ_ioPUT_CONFIG, LJ_chTIMER_CLOCK_BASE, LJ_tc1MHZ_DIV, 0);
     ErrorHandler(ljError, __LINE__);
 
-    // Set TCD = 1 , 1MHz WITH DIVISOR
+    // Set TCD = 0 , 1MHz WITH DIVISOR
     ljError = ePut(ljHandle, LJ_ioPUT_CONFIG, LJ_chTIMER_CLOCK_DIVISOR, 0, 0); //IF DOESN'T WORK THEN CHANGE THE LEF BIT TO 0
     ErrorHandler(ljError, __LINE__);
 
