@@ -150,21 +150,33 @@ int MotorEnable(LJ_HANDLE ljHandle)
         /*  This if-else loop is used to display the level of brightness
         ans the maximum out value getting from the sensors are in the range
         of 2.3 to 2.6 */
-        if (DifferenceVal >= 0.05 && DifferenceVal < 0.75)
+        if (DifferenceVal >= 0.05 && DifferenceVal < 0.4)
         {
             printf("*\n");
         }
-        else if (DifferenceVal >= 0.75 && DifferenceVal < 1.45)
+        else if (DifferenceVal >= 0.4 && DifferenceVal < 0.75)
         {
             printf("**\n");
         }
-        else if (DifferenceVal >= 1.45 && DifferenceVal < 2.15)
+        else if (DifferenceVal >= 0.75 && DifferenceVal < 1.1)
         {
             printf("***\n");
         }
-        else if (DifferenceVal >= 2.15 && DifferenceVal < 3)
+        else if (DifferenceVal >= 1.1 && DifferenceVal < 1.45)
         {
             printf("****\n");
+        }
+        else if (DifferenceVal >= 1.45 && DifferenceVal < 1.8)
+        {
+            printf("*****\n");
+        }
+        else if (DifferenceVal >= 1.8 && DifferenceVal < 2.15)
+        {
+            printf("******\n");
+        }
+        else if (DifferenceVal >= 2.15)
+        {
+            printf("*******\n");
         }
 
         MotorRotation(ReadLeftSensorVal, ReadRightSensorVal,ljHandle);     //Calling MotorRotation function
