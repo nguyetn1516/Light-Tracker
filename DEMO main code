@@ -5,8 +5,8 @@
     This is the main code that uses the two photo
     sensors and a gear motor to detect a light source.
 
-    main function, MotorEnable function and MotorRotation function      Natalie Nguyen
-    ErrorHandler and a part of MotorEnable function (photo sensors)     Brent Goodman
+    main function, MotorEnable function and MotorRotation function                  Natalie Nguyen
+    ErrorHandler function and a part of MotorEnable function (photo sensors)        Brent Goodman
 
 */
 
