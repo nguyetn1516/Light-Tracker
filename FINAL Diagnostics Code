@@ -89,7 +89,7 @@ void SpeedDiag(LJ_HANDLE ljHandle, int userINP)
     ljError = ePut(ljHandle, LJ_ioPUT_TIMER_MODE, 0, LJ_tmPWM8, 0);    // USING 1MHz WITH DIVISOR, TCD = 1
     ErrorHandler(ljError, __LINE__);
 
-    DUTYASK: printf("\nenter 10 or 35 for the duty cycle: ");
+    DUTYASK: printf("\nenter 10 or 30 for the duty cycle: ");
     int userDuty;
     scanf("%d", &userDuty);
 
