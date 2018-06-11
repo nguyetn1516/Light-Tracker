@@ -22,6 +22,7 @@
 #define bgWHITE        BACKGROUND_RED | BACKGROUND_GREEN | BACKGROUND_BLUE
 #define WHITE        FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE
 
+// Function to display where error is for LabJack
 void ErrorHandler (LJ_ERROR ljError, long lngLineNumber)
 {
     char err[255];
@@ -38,11 +39,13 @@ void ErrorHandler (LJ_ERROR ljError, long lngLineNumber)
     }
 }
 
+// Function that simplifies changing of text color
 void textcolor (int color)
 {
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
 }
 
+// Function that puts the cursor at a point on the console
 void gotoxy (int x, int y)
 {
     COORD coord; // Cursor coordinates
@@ -65,6 +68,7 @@ void gotoxy (int x, int y)
     SetConsoleCursorPosition(hStdOut, coord);
 }
 
+// Function that tests to make sure the motor rotation speed is operating properly
 void SpeedDiag(LJ_HANDLE ljHandle, int userINP)
 {
     LJ_ERROR ljError;
@@ -77,7 +81,7 @@ void SpeedDiag(LJ_HANDLE ljHandle, int userINP)
     ljError =  ePut(ljHandle, LJ_ioPUT_CONFIG, LJ_chTIMER_CLOCK_BASE, LJ_tc1MHZ_DIV, 0);
     ErrorHandler(ljError, __LINE__);
 
-    // Set TCD = 0 , 1MHz WITH DIVISOR
+    // Set TCD = 1 , 1MHz WITH DIVISOR
     ljError = ePut(ljHandle, LJ_ioPUT_CONFIG, LJ_chTIMER_CLOCK_DIVISOR, 0, 0); //IF DOESN'T WORK THEN CHANGE THE LEF BIT TO 0
     ErrorHandler(ljError, __LINE__);
 
@@ -89,7 +93,7 @@ void SpeedDiag(LJ_HANDLE ljHandle, int userINP)
     ljError = ePut(ljHandle, LJ_ioPUT_TIMER_MODE, 0, LJ_tmPWM8, 0);    // USING 1MHz WITH DIVISOR, TCD = 1
     ErrorHandler(ljError, __LINE__);
 
-    DUTYASK: printf("\nenter 10 or 30 for the duty cycle: ");
+    DUTYASK: printf("\nenter 10 or 35 for the duty cycle: ");
     int userDuty;
     scanf("%d", &userDuty);
 
@@ -145,6 +149,7 @@ void SpeedDiag(LJ_HANDLE ljHandle, int userINP)
 
 }
 
+// Function that tests to make sure the motor can rotate left and right properly
 void MotorDiag(LJ_HANDLE ljHandle)
 {
     LJ_ERROR ljError;
@@ -200,6 +205,7 @@ void MotorDiag(LJ_HANDLE ljHandle)
     }
 }
 
+// Function that tests to make sure the photo sensors are sensing the correct amount of light
 void SensorsDiag(LJ_HANDLE ljHandle)
 {
     LJ_ERROR ljError;
@@ -262,6 +268,7 @@ void clrscr (int color)
     SetConsoleCursorPosition(hStdOut, coord);
 }
 
+// Displays a string at a certain point on console screen
 int mvputs (int row, int col, const char *str)
 {
     gotoxy(row, col);
@@ -273,7 +280,8 @@ void MotorDiag();
 void SensorDiag();
 void SpeedDiag();
 
-
+// Main function that displays options and, depending
+// on what the user chooses, runs a diagnostics function
 int main(void){
 
     LJ_ERROR ljError;         // LabJack error code
