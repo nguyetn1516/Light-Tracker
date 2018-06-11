@@ -154,6 +154,20 @@ int MotorEnable(LJ_HANDLE ljHandle)
             printf("****\n");
         }//exit if-else
         MotorRotation(ReadLeftSensorVal, ReadRightSensorVal,ljHandle);     //Calling MotorRotation function
+        
+        int userKEY = _getch(); // getting user input to exit program
+        if (userINP == 27) // if esc key pressed exit program
+        {
+            ljError = ePut(ljHandle, LJ_ioPIN_CONFIGURATION_RESET, 0, 0, 0);
+            ErrorHandler(ljError, __LINE__);
+
+            ljError = ePut(ljHandle, LJ_ioPUT_DIGITAL_BIT, 3, 0, 0);   //FIO5 conneccted to pin 2
+            ErrorHandler(ljError, __LINE__);
+
+            ljError = ePut(ljHandle, LJ_ioPUT_DIGITAL_BIT, 0, 0, 0);   //FIO6 conneccted to pin 7
+            ErrorHandler(ljError, __LINE__);
+            return 0;
+        }
     }//exit while
     return 0;
 }//exit MotorEnable func
